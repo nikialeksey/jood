@@ -1,0 +1,105 @@
+plugins {
+    id 'java-library'
+    id 'jacoco'
+    id 'com.jfrog.bintray' version '1.8.4'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    implementation 'org.cactoos:cactoos:0.41'
+    implementation 'org.xerial:sqlite-jdbc:3.27.2.1'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+ext {
+    bintrayName = 'jood'
+    artifact = 'jood'
+    libraryName = 'jood'
+
+    libraryDescription = 'Java object oriented database library'
+
+    bintrayRepo = 'java'
+    publishedGroupId = 'com.nikialeksey'
+
+    siteUrl = 'https://github.com/nikialeksey/jood'
+    gitUrl = 'https://github.com/nikialeksey/jood.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'nikialeksey'
+    developerName = 'Alexey Nikitin'
+    developerEmail = 'nikialeksey@gmail.com'
+    licenseName = 'MIT License'
+    licenseUrl = 'https://github.com/nikialeksey/jood/blob/master/LICENSE'
+    allLicenses = ['MIT']
+}
+if (project.rootProject.file('local.properties').exists()) {
+    apply plugin: 'maven'
+    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+    apply plugin: 'maven-publish'
+    publishing {
+        publications {
+            jood_lib(MavenPublication) {
+                artifact(javadocJar)
+                artifact(sourcesJar)
+                artifact("$buildDir/libs/lib-${libraryVersion}.jar")
+
+                groupId publishedGroupId
+                artifactId artifact
+                version libraryVersion
+
+                pom {
+                    name = libraryName
+                    description = libraryDescription
+
+                    url = siteUrl
+
+                    licenses {
+                        license {
+                            name = licenseName
+                            url = licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = developerId
+                            name = developerName
+                            email = developerEmail
+                        }
+                    }
+                    scm {
+                        connection = gitUrl
+                        developerConnection = gitUrl
+                        url = siteUrl
+                    }
+                }
+
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', 'org.cactoos')
+                    dependencyNode.appendNode('artifactId', 'cactoos')
+                    dependencyNode.appendNode('version', '0.41')
+
+                    dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', 'org.xerial')
+                    dependencyNode.appendNode('artifactId', 'sqlite-jdbc')
+                    dependencyNode.appendNode('version', '3.27.2.1')
+                }
+            }
+        }
+    }
+    bintray.publications = ['jood_lib']
+    bintray.configurations = []
+}

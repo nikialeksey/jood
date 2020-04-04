@@ -1,7 +1,9 @@
 package com.nikialeksey.jood;
 
-public interface Db {
-    QueryResult read(String query, String[] args) throws DbException;
+import com.nikialeksey.jood.args.Arg;
 
-    void write(String query, String[] args) throws DbException;
+public interface Db {
+    QueryResult read(String query, Arg...args) throws DbException;
+
+    void write(String query, Arg... args) throws DbException;
 }

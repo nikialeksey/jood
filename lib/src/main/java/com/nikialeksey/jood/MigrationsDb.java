@@ -1,5 +1,7 @@
 package com.nikialeksey.jood;
 
+import com.nikialeksey.jood.args.Arg;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,13 +22,14 @@ public class MigrationsDb implements Db {
     }
 
     @Override
-    public QueryResult read(final String query, final String[] args) throws DbException {
+    public QueryResult read(final String query, final Arg... args) throws
+        DbException {
         ensureMigrations();
         return origin.read(query, args);
     }
 
     @Override
-    public void write(final String query, final String[] args) throws DbException {
+    public void write(final String query, final Arg... args) throws DbException {
         ensureMigrations();
         origin.write(query, args);
     }
@@ -38,13 +41,13 @@ public class MigrationsDb implements Db {
             for (int version = oldVersion; version < dbVersion; version++) {
                 migrations.apply(version, origin);
             }
-            origin.write("UPDATE migrations SET version = " + dbVersion, new String[]{});
+            origin.write("UPDATE migrations SET version = " + dbVersion);
         }
     }
 
     private int oldVersion() throws DbException {
         try (
-            final QueryResult result = origin.read("SELECT version FROM migrations", new String[]{})
+            final QueryResult result = origin.read("SELECT version FROM migrations")
         ) {
             final ResultSet rs = result.rs();
             rs.next();
@@ -55,13 +58,13 @@ public class MigrationsDb implements Db {
     }
 
     private void ensureMigrationsTable() throws DbException {
-        origin.write("CREATE TABLE IF NOT EXISTS migrations (version INTEGER NOT NULL DEFAULT 0)", new String[]{});
+        origin.write("CREATE TABLE IF NOT EXISTS migrations (version INTEGER NOT NULL DEFAULT 0)");
         try (
-            final QueryResult result = origin.read("SELECT 1 FROM migrations", new String[]{})
+            final QueryResult result = origin.read("SELECT 1 FROM migrations")
         ) {
             final ResultSet rs = result.rs();
             if (!rs.next()) {
-                origin.write("INSERT INTO migrations (version) VALUES (0)", new String[]{});
+                origin.write("INSERT INTO migrations (version) VALUES (0)");
             }
         } catch (SQLException e) {
             throw new DbException("Can not initialize migrations table.", e);

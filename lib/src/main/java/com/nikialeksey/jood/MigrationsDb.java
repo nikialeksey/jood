@@ -34,6 +34,15 @@ public class MigrationsDb implements Db {
         origin.write(query, args);
     }
 
+    @Override
+    public QueryResult writeReturnGenerated(
+        final String query,
+        final Arg... args
+    ) throws DbException {
+        ensureMigrations();
+        return origin.writeReturnGenerated(query, args);
+    }
+
     private void ensureMigrations() throws DbException {
         ensureMigrationsTable();
         int oldVersion = oldVersion();

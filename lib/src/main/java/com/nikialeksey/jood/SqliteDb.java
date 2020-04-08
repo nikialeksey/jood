@@ -48,4 +48,12 @@ public class SqliteDb implements Db {
     public void write(final String query, final Arg... args) throws DbException {
         db.write(query, args);
     }
+
+    @Override
+    public QueryResult writeReturnGenerated(
+        final String query,
+        final Arg... args
+    ) throws DbException {
+        return db.writeReturnGenerated(query, args);
+    }
 }

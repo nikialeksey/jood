@@ -5,6 +5,7 @@ import org.cactoos.Scalar;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class SimpleDb implements Db {
     private final Scalar<Connection> conn;
@@ -44,6 +45,36 @@ public class SimpleDb implements Db {
                 args[i - 1].printTo(statement, i);
             }
             statement.executeUpdate();
+        } catch (Exception e) {
+            throw new DbException(
+                String.format(
+                    "Can not execute the write query '%s'.",
+                    query
+                ),
+                e
+            );
+        }
+    }
+
+    @Override
+    public QueryResult writeReturnGenerated(
+        final String query,
+        final Arg... args
+    ) throws DbException {
+        try {
+            final PreparedStatement statement = conn.value()
+                .prepareStatement(
+                    query,
+                    Statement.RETURN_GENERATED_KEYS
+                );
+            for (int i = 1; i <= args.length; i++) {
+                args[i - 1].printTo(statement, i);
+            }
+            statement.executeUpdate();
+            return new SimpleQueryResult(
+                statement,
+                statement.getGeneratedKeys()
+            );
         } catch (Exception e) {
             throw new DbException(
                 String.format(

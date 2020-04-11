@@ -57,4 +57,9 @@ public class H2Db implements Db {
     ) throws DbException {
         return origin.writeReturnGenerated(query, args);
     }
+
+    @Override
+    public void run(final Transaction transaction) throws DbException {
+        origin.run(transaction);
+    }
 }

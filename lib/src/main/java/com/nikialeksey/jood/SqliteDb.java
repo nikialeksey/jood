@@ -56,4 +56,9 @@ public class SqliteDb implements Db {
     ) throws DbException {
         return db.writeReturnGenerated(query, args);
     }
+
+    @Override
+    public void run(final Transaction transaction) throws DbException {
+        db.run(transaction);
+    }
 }

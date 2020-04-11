@@ -85,4 +85,31 @@ public class SimpleDb implements Db {
             );
         }
     }
+
+    @Override
+    public void run(final Transaction transaction) throws DbException {
+        try {
+            final Connection value = conn.value();
+            final boolean savedAutoCommit = value.getAutoCommit();
+            value.setAutoCommit(false);
+
+            try {
+                transaction.run();
+                value.commit();
+            } catch (DbException e) {
+                value.rollback();
+                throw new DbException(
+                    "Transaction could not be completed, rollback.",
+                    e
+                );
+            }
+
+            value.setAutoCommit(savedAutoCommit);
+        } catch (Exception e) {
+            throw new DbException(
+                "Can not execute the transaction.",
+                e
+            );
+        }
+    }
 }

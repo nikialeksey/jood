@@ -11,4 +11,6 @@ public interface Db {
         String query,
         Arg... args
     ) throws DbException;
+
+    void run(Transaction transaction) throws DbException;
 }

@@ -49,7 +49,7 @@ public class MigrationsDb implements Db {
         origin.run(transaction);
     }
 
-    private void ensureMigrations() throws DbException {
+    private synchronized void ensureMigrations() throws DbException {
         ensureMigrationsTable();
         int oldVersion = oldVersion();
         if (oldVersion != dbVersion) {

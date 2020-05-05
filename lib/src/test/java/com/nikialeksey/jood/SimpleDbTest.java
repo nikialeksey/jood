@@ -6,6 +6,8 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 
 public class SimpleDbTest {
@@ -57,6 +59,27 @@ public class SimpleDbTest {
             final ResultSet rs = qr.rs();
             Assert.assertThat(rs.next(), IsEqual.equalTo(true));
             Assert.assertThat(rs.getInt(1), IsEqual.equalTo(100));
+        }
+    }
+
+    @Test
+    public void transactionRollback() throws Exception {
+        final Connection connection = DriverManager.getConnection(
+            "jdbc:sqlite::memory:"
+        );
+        final Db db = new SimpleDb(() -> connection);
+        final boolean savedAutoCommit = connection.getAutoCommit();
+
+        try {
+            db.run(() -> {
+                throw new RuntimeException();
+            });
+            Assert.fail("Transaction should be fail");
+        } catch (DbException e) {
+            Assert.assertThat(
+                connection.getAutoCommit(),
+                IsEqual.equalTo(savedAutoCommit)
+            );
         }
     }
 

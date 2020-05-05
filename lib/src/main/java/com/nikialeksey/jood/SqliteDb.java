@@ -39,8 +39,10 @@ public class SqliteDb implements Db {
     }
 
     @Override
-    public QueryResult read(final String query, final Arg... args) throws
-        DbException {
+    public QueryResult read(
+        final String query,
+        final Arg... args
+    ) throws DbException {
         return db.read(query, args);
     }
 

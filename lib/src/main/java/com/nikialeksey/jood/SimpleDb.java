@@ -89,22 +89,22 @@ public class SimpleDb implements Db {
     @Override
     public void run(final Transaction transaction) throws DbException {
         try {
-            final Connection value = conn.value();
-            final boolean savedAutoCommit = value.getAutoCommit();
-            value.setAutoCommit(false);
+            final Connection connection = conn.value();
+            final boolean savedAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
 
             try {
                 transaction.run();
-                value.commit();
+                connection.commit();
             } catch (DbException e) {
-                value.rollback();
+                connection.rollback();
                 throw new DbException(
                     "Transaction could not be completed, rollback.",
                     e
                 );
+            } finally {
+                connection.setAutoCommit(savedAutoCommit);
             }
-
-            value.setAutoCommit(savedAutoCommit);
         } catch (Exception e) {
             throw new DbException(
                 "Can not execute the transaction.",

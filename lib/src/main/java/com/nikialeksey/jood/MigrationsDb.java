@@ -1,6 +1,7 @@
 package com.nikialeksey.jood;
 
 import com.nikialeksey.jood.args.Arg;
+import com.nikialeksey.jood.sql.Sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,9 +30,21 @@ public class MigrationsDb implements Db {
     }
 
     @Override
+    public QueryResult read(final Sql sql) throws DbException {
+        ensureMigrations();
+        return origin.read(sql);
+    }
+
+    @Override
     public void write(final String query, final Arg... args) throws DbException {
         ensureMigrations();
         origin.write(query, args);
+    }
+
+    @Override
+    public void write(final Sql sql) throws DbException {
+        ensureMigrations();
+        origin.write(sql);
     }
 
     @Override
@@ -41,6 +54,12 @@ public class MigrationsDb implements Db {
     ) throws DbException {
         ensureMigrations();
         return origin.writeReturnGenerated(query, args);
+    }
+
+    @Override
+    public QueryResult writeReturnGenerated(final Sql sql) throws DbException {
+        ensureMigrations();
+        return origin.writeReturnGenerated(sql);
     }
 
     @Override

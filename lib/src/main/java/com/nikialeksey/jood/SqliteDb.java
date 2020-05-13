@@ -1,6 +1,7 @@
 package com.nikialeksey.jood;
 
 import com.nikialeksey.jood.args.Arg;
+import com.nikialeksey.jood.sql.Sql;
 import org.cactoos.Scalar;
 import org.cactoos.scalar.Solid;
 
@@ -47,8 +48,18 @@ public class SqliteDb implements Db {
     }
 
     @Override
+    public QueryResult read(final Sql sql) throws DbException {
+        return db.read(sql);
+    }
+
+    @Override
     public void write(final String query, final Arg... args) throws DbException {
         db.write(query, args);
+    }
+
+    @Override
+    public void write(final Sql sql) throws DbException {
+        db.write(sql);
     }
 
     @Override
@@ -57,6 +68,11 @@ public class SqliteDb implements Db {
         final Arg... args
     ) throws DbException {
         return db.writeReturnGenerated(query, args);
+    }
+
+    @Override
+    public QueryResult writeReturnGenerated(final Sql sql) throws DbException {
+        return db.writeReturnGenerated(sql);
     }
 
     @Override

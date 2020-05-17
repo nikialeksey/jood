@@ -228,4 +228,178 @@ public class SimpleDbTest {
         }
     }
 
+    @Test
+    public void simpleNestedTransactionWithDataSource() throws Exception {
+        final ComboPooledDataSource ds = new ComboPooledDataSource();
+        ds.setJdbcUrl("jdbc:h2:mem:simpleNestedTransactionWithDataSource");
+        final Db db = new SimpleDb(ds);
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        db.run(() -> {
+            db.run(() -> {
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+            });
+            db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+        });
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(2));
+        }
+    }
+
+    @Test
+    public void rollbackNestedTransactionWhenOutTransactionFailsWithDataSource() throws Exception {
+        final ComboPooledDataSource ds = new ComboPooledDataSource();
+        ds.setJdbcUrl("jdbc:h2:mem:rollbackNestedTransactionWhenOutTransactionFailsWithDataSource");
+        final Db db = new SimpleDb(ds);
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+                throw new RuntimeException("Fail");
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
+    @Test
+    public void rollbackNestedTransactionWhenNestedTransactionFailsWithDataSource() throws Exception {
+        final ComboPooledDataSource ds = new ComboPooledDataSource();
+        ds.setJdbcUrl("jdbc:h2:mem:rollbackNestedTransactionWhenNestedTransactionFailsWithDataSource");
+        final Db db = new SimpleDb(ds);
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                    throw new RuntimeException("Fail");
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
+    @Test
+    public void simpleNestedTransactionWithFixedConnection() throws Exception {
+        final Db db = new H2Db("simpleNestedTransactionWithFixedConnection");
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        db.run(() -> {
+            db.run(() -> {
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+            });
+            db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+        });
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(2));
+        }
+    }
+
+    @Test
+    public void rollbackNestedTransactionWhenOutTransactionFailsWithFixedConnection() throws Exception {
+        final Db db = new H2Db("rollbackNestedTransactionWhenOutTransactionFailsWithFixedConnection");
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+                throw new RuntimeException("Fail");
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
+    @Test
+    public void rollbackNestedTransactionWhenNestedTransactionFailsWithFixedConnection() throws Exception {
+        final Db db = new H2Db("rollbackNestedTransactionWhenNestedTransactionFailsWithFixedConnection");
+
+        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                    throw new RuntimeException("Fail");
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
 }

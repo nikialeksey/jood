@@ -9,4 +9,5 @@ public interface Pool {
     void release(Connection connection) throws DbException;
     void fix(Connection connection);
     void unfix(Connection connection) throws DbException;
+    int fixCount() throws DbException;
 }

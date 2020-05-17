@@ -1,6 +1,7 @@
 package com.nikialeksey.jood;
 
 import com.nikialeksey.jood.args.Arg;
+import com.nikialeksey.jood.sql.SimpleSql;
 import com.nikialeksey.jood.sql.Sql;
 
 import java.sql.ResultSet;
@@ -23,8 +24,10 @@ public class MigrationsDb implements Db {
     }
 
     @Override
-    public QueryResult read(final String query, final Arg... args) throws
-        DbException {
+    public QueryResult read(
+        final String query,
+        final Arg... args
+    ) throws DbException {
         ensureMigrations();
         return origin.read(query, args);
     }
@@ -36,7 +39,10 @@ public class MigrationsDb implements Db {
     }
 
     @Override
-    public void write(final String query, final Arg... args) throws DbException {
+    public void write(
+        final String query,
+        final Arg... args
+    ) throws DbException {
         ensureMigrations();
         origin.write(query, args);
     }
@@ -92,16 +98,26 @@ public class MigrationsDb implements Db {
     }
 
     private void ensureMigrationsTable() throws DbException {
-        origin.write("CREATE TABLE IF NOT EXISTS migrations (version INTEGER NOT NULL DEFAULT 0)");
         try (
-            final QueryResult result = origin.read("SELECT 1 FROM migrations")
+            final QueryResult ignored = origin.read(
+                new SimpleSql("SELECT 1 FROM migrations")
+            )
         ) {
-            final ResultSet rs = result.rs();
-            if (!rs.next()) {
-                origin.write("INSERT INTO migrations (version) VALUES (0)");
+            // yeah, migrations table exists
+        } catch (DbException ignored) {
+            // Most likely reason for exception in this place - table
+            // migrations does not exists, lets create and initialize it.
+            origin.write("CREATE TABLE migrations (version INTEGER NOT NULL DEFAULT 0)");
+            try (
+                final QueryResult result = origin.read("SELECT 1 FROM migrations")
+            ) {
+                final ResultSet rs = result.rs();
+                if (!rs.next()) {
+                    origin.write("INSERT INTO migrations (version) VALUES (0)");
+                }
+            } catch (SQLException e) {
+                throw new DbException("Can not initialize migrations table.", e);
             }
-        } catch (SQLException e) {
-            throw new DbException("Can not initialize migrations table.", e);
         }
     }
 }

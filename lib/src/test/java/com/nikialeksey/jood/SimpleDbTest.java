@@ -287,6 +287,53 @@ public class SimpleDbTest {
     }
 
     @Test
+    public void rollbackNestedTransactionWithMigrationsAndDataSource() throws Exception {
+        final ComboPooledDataSource ds = new ComboPooledDataSource();
+        ds.setJdbcUrl("jdbc:h2:mem:rollbackNestedTransactionWithMigrationsAndDataSource");
+        final Db db = new MigrationsDb(
+            new SimpleDb(ds),
+            new SimpleMigrations(
+                new Migration() {
+                    @Override
+                    public int number() {
+                        return 0;
+                    }
+
+                    @Override
+                    public void execute(final Db db) throws DbException {
+                        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+                    }
+                }
+            ),
+            1
+        );
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(3)"));
+                throw new RuntimeException("Fail");
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
+    @Test
     public void rollbackNestedTransactionWhenNestedTransactionFailsWithDataSource() throws Exception {
         final ComboPooledDataSource ds = new ComboPooledDataSource();
         ds.setJdbcUrl("jdbc:h2:mem:rollbackNestedTransactionWhenNestedTransactionFailsWithDataSource");
@@ -385,6 +432,51 @@ public class SimpleDbTest {
                     throw new RuntimeException("Fail");
                 });
                 db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+            });
+            Assert.fail("Transaction must be failed!");
+        } catch (DbException e) {
+            // right way
+        }
+
+        try (
+            final QueryResult qr = db.read(
+                new SimpleSql("SELECT COUNT(*) FROM t")
+            )
+        ) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(rs.getInt(1), IsEqual.equalTo(0));
+        }
+    }
+
+    @Test
+    public void rollbackNestedTransactionWithMigrationsAndFixedConnection() throws Exception {
+        final Db db = new MigrationsDb(
+            new H2Db("rollbackNestedTransactionWithMigrationsAndFixedConnection"),
+            new SimpleMigrations(
+                new Migration() {
+                    @Override
+                    public int number() {
+                        return 0;
+                    }
+
+                    @Override
+                    public void execute(final Db db) throws DbException {
+                        db.write(new SimpleSql("CREATE TABLE t (n INTEGER NOT NULL)"));
+                    }
+                }
+            ),
+            1
+        );
+
+        try {
+            db.run(() -> {
+                db.run(() -> {
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(1)"));
+                    db.write(new SimpleSql("INSERT INTO t(n) VALUES(2)"));
+                });
+                db.write(new SimpleSql("INSERT INTO t(n) VALUES(3)"));
+                throw new RuntimeException("Fail");
             });
             Assert.fail("Transaction must be failed!");
         } catch (DbException e) {

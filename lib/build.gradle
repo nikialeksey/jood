@@ -15,6 +15,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+jacoco {
+    toolVersion = "0.8.5"
+}
 jacocoTestReport {
     reports {
         xml.enabled = true
@@ -37,7 +40,7 @@ ext {
     siteUrl = 'https://github.com/nikialeksey/jood'
     gitUrl = 'https://github.com/nikialeksey/jood.git'
 
-    libraryVersion = '1.4.0'
+    libraryVersion = '1.4.1'
 
     developerId = 'nikialeksey'
     developerName = 'Alexey Nikitin'

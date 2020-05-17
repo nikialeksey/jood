@@ -168,8 +168,10 @@ public class SimpleDb implements Db {
             try {
                 connection.setAutoCommit(false);
                 transaction.run();
-                connection.commit();
-            } catch (DbException e) {
+                if (pool.fixCount() == 1) {
+                    connection.commit();
+                }
+            } catch (Exception e) {
                 connection.rollback();
                 throw new DbException(
                     "Transaction could not be completed, rollback.",

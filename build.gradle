@@ -2,6 +2,10 @@ plugins {
     id 'com.nikialeksey.nullfree' version '1.5.1'
 }
 
+nullfree {
+    skipComparisions = true
+}
+
 allprojects {
     ext {
         group = 'com.nikialeksey'

@@ -2,6 +2,7 @@ package com.nikialeksey.jood;
 
 import com.nikialeksey.jood.args.Arg;
 import com.nikialeksey.jood.sql.Sql;
+import org.cactoos.scalar.Solid;
 
 import java.sql.DriverManager;
 
@@ -15,19 +16,21 @@ public class H2Db implements Db {
 
     public H2Db(final String name) {
         this(
-            new SimpleDb(() -> {
-                try {
-                    Class.forName("org.h2.Driver");
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+            new SimpleDb(
+                new Solid<>(() -> {
+                    try {
+                        Class.forName("org.h2.Driver");
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                return DriverManager.getConnection(
-                    "jdbc:h2:mem:" + name,
-                    "",
-                    ""
-                );
-            })
+                    return DriverManager.getConnection(
+                        "jdbc:h2:mem:" + name,
+                        "",
+                        ""
+                    );
+                })
+            )
         );
     }
 

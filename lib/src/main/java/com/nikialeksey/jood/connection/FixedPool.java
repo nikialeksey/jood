@@ -4,13 +4,26 @@ import com.nikialeksey.jood.DbException;
 import org.cactoos.Scalar;
 
 import java.sql.Connection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FixedPool implements Pool {
 
     private final Scalar<Connection> connection;
+    private final AtomicInteger fixCount;
 
     public FixedPool(final Scalar<Connection> connection) {
+        this(
+            connection,
+            new AtomicInteger(0)
+        );
+    }
+
+    public FixedPool(
+        final Scalar<Connection> connection,
+        final AtomicInteger fixCount
+    ) {
         this.connection = connection;
+        this.fixCount = fixCount;
     }
 
     @Override
@@ -32,11 +45,16 @@ public class FixedPool implements Pool {
 
     @Override
     public void fix(final Connection connection) {
-        // ignore
+        fixCount.incrementAndGet();
     }
 
     @Override
     public void unfix(final Connection connection) {
-        // ignore
+        fixCount.decrementAndGet();
+    }
+
+    @Override
+    public int fixCount() {
+        return fixCount.get();
     }
 }

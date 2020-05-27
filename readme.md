@@ -4,7 +4,7 @@
 
 ![nullfree](https://iwillfailyou.com/nullfree/nikialeksey/jood)
 
-[![Lib version](https://img.shields.io/maven-central/v/com.nikialeksey/jood.svg?label="maven central")](https://maven-badges.herokuapp.com/maven-central/com.nikialeksey/jood)
+[![Lib version](https://img.shields.io/maven-central/v/com.nikialeksey/jood.svg?label=maven)](https://maven-badges.herokuapp.com/maven-central/com.nikialeksey/jood)
 [![Build Status](https://travis-ci.org/nikialeksey/jood.svg?branch=master)](https://travis-ci.org/nikialeksey/jood)
 [![codecov](https://codecov.io/gh/nikialeksey/jood/branch/master/graph/badge.svg)](https://codecov.io/gh/nikialeksey/jood)
 
@@ -30,7 +30,7 @@ implementation 'com.nikialeksey:jood:x.y.z'
 ```
 
 Where `x.y.z` actual version from
-[![Lib version](https://img.shields.io/maven-central/v/com.nikialeksey/jood.svg?label="maven central")](https://maven-badges.herokuapp.com/maven-central/com.nikialeksey/jood)
+[![Lib version](https://img.shields.io/maven-central/v/com.nikialeksey/jood.svg?label=maven)](https://maven-badges.herokuapp.com/maven-central/com.nikialeksey/jood)
 
 ### Connection
 ```java

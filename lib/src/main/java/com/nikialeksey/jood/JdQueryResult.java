@@ -7,14 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SimpleQueryResult implements QueryResult {
+public class JdQueryResult implements QueryResult {
 
     private final Pool pool;
     private final Connection connection;
     private final Statement statement;
     private final ResultSet resultSet;
 
-    public SimpleQueryResult(
+    public JdQueryResult(
         final Pool pool,
         final Connection connection,
         final Statement statement,
@@ -37,13 +37,13 @@ public class SimpleQueryResult implements QueryResult {
     }
 
     @Override
-    public void close() throws DbException {
+    public void close() throws JbException {
         try {
             resultSet.close();
             statement.close();
             pool.release(connection);
         } catch (SQLException e) {
-            throw new DbException("Can not close the result set and statement.", e);
+            throw new JbException("Can not close the result set and statement.", e);
         }
     }
 }

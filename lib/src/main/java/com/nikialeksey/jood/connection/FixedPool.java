@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.connection;
 
-import com.nikialeksey.jood.DbException;
+import com.nikialeksey.jood.JbException;
 import org.cactoos.Scalar;
 
 import java.sql.Connection;
@@ -27,11 +27,11 @@ public class FixedPool implements Pool {
     }
 
     @Override
-    public Connection connection() throws DbException {
+    public Connection connection() throws JbException {
         try {
             return connection.value();
         } catch (Exception e) {
-            throw new DbException(
+            throw new JbException(
                 "Could not get the connection.",
                 e
             );

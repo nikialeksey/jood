@@ -1,10 +1,10 @@
 package com.nikialeksey.jood.sql;
 
-import com.nikialeksey.jood.DbException;
+import com.nikialeksey.jood.JbException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public interface Sql {
-    PreparedStatement prepare(Connection connection) throws DbException;
+    PreparedStatement prepare(Connection connection) throws JbException;
 }

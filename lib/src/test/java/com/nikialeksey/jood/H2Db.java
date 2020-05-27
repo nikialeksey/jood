@@ -1,6 +1,5 @@
 package com.nikialeksey.jood;
 
-import com.nikialeksey.jood.args.Arg;
 import com.nikialeksey.jood.sql.Sql;
 import org.cactoos.scalar.Solid;
 
@@ -16,7 +15,7 @@ public class H2Db implements Db {
 
     public H2Db(final String name) {
         this(
-            new SimpleDb(
+            new JdDb(
                 new Solid<>(() -> {
                     try {
                         Class.forName("org.h2.Driver");
@@ -39,46 +38,22 @@ public class H2Db implements Db {
     }
 
     @Override
-    public QueryResult read(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        return origin.read(query, args);
-    }
-
-    @Override
-    public QueryResult read(final Sql sql) throws DbException {
+    public QueryResult read(final Sql sql) throws JbException {
         return origin.read(sql);
     }
 
     @Override
-    public void write(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        origin.write(query, args);
-    }
-
-    @Override
-    public void write(final Sql sql) throws DbException {
+    public void write(final Sql sql) throws JbException {
         origin.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        return origin.writeReturnGenerated(query, args);
-    }
-
-    @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws DbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
         return origin.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws DbException {
+    public void run(final Transaction transaction) throws JbException {
         origin.run(transaction);
     }
 }

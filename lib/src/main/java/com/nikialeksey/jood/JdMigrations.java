@@ -4,15 +4,15 @@ import org.cactoos.list.ListOf;
 
 import java.util.Collection;
 
-public class SimpleMigrations implements Migrations {
+public class JdMigrations implements Migrations {
 
     private final Collection<Migration> migrations;
 
-    public SimpleMigrations(final Migration... migrations) {
+    public JdMigrations(final Migration... migrations) {
         this(new ListOf<>(migrations));
     }
 
-    public SimpleMigrations(final Collection<Migration> migrations) {
+    public JdMigrations(final Collection<Migration> migrations) {
         this.migrations = migrations;
     }
 
@@ -20,7 +20,7 @@ public class SimpleMigrations implements Migrations {
     public void apply(
         final int number,
         final Db db
-    ) throws DbException {
+    ) throws JbException {
         for (final Migration migration : migrations) {
             if (migration.number() == number) {
                 migration.execute(db);

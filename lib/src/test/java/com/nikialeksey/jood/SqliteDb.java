@@ -1,6 +1,5 @@
 package com.nikialeksey.jood;
 
-import com.nikialeksey.jood.args.Arg;
 import com.nikialeksey.jood.sql.Sql;
 import org.cactoos.Scalar;
 import org.cactoos.scalar.Solid;
@@ -11,7 +10,7 @@ import java.sql.DriverManager;
 
 public class SqliteDb implements Db {
 
-    private final SimpleDb db;
+    private final JdDb db;
 
     public SqliteDb() {
         this(":memory:");
@@ -32,51 +31,30 @@ public class SqliteDb implements Db {
     }
 
     public SqliteDb(final Scalar<Connection> conn) {
-        this(new SimpleDb(conn));
+        this(new JdDb(conn));
     }
 
-    public SqliteDb(final SimpleDb db) {
+    public SqliteDb(final JdDb db) {
         this.db = db;
     }
 
     @Override
-    public QueryResult read(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        return db.read(query, args);
-    }
-
-    @Override
-    public QueryResult read(final Sql sql) throws DbException {
+    public QueryResult read(final Sql sql) throws JbException {
         return db.read(sql);
     }
 
     @Override
-    public void write(final String query, final Arg... args) throws DbException {
-        db.write(query, args);
-    }
-
-    @Override
-    public void write(final Sql sql) throws DbException {
+    public void write(final Sql sql) throws JbException {
         db.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        return db.writeReturnGenerated(query, args);
-    }
-
-    @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws DbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
         return db.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws DbException {
+    public void run(final Transaction transaction) throws JbException {
         db.run(transaction);
     }
 }

@@ -1,7 +1,7 @@
 package com.nikialeksey.jood;
 
-import com.nikialeksey.jood.args.Arg;
-import com.nikialeksey.jood.sql.SimpleSql;
+import com.nikialeksey.jood.args.IntArg;
+import com.nikialeksey.jood.sql.JdSql;
 import com.nikialeksey.jood.sql.Sql;
 
 import java.sql.ResultSet;
@@ -24,99 +24,91 @@ public class MigrationsDb implements Db {
     }
 
     @Override
-    public QueryResult read(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        ensureMigrations();
-        return origin.read(query, args);
-    }
-
-    @Override
-    public QueryResult read(final Sql sql) throws DbException {
+    public QueryResult read(final Sql sql) throws JbException {
         ensureMigrations();
         return origin.read(sql);
     }
 
     @Override
-    public void write(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        ensureMigrations();
-        origin.write(query, args);
-    }
-
-    @Override
-    public void write(final Sql sql) throws DbException {
+    public void write(final Sql sql) throws JbException {
         ensureMigrations();
         origin.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(
-        final String query,
-        final Arg... args
-    ) throws DbException {
-        ensureMigrations();
-        return origin.writeReturnGenerated(query, args);
-    }
-
-    @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws DbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
         ensureMigrations();
         return origin.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws DbException {
+    public void run(final Transaction transaction) throws JbException {
         ensureMigrations();
         origin.run(transaction);
     }
 
-    private synchronized void ensureMigrations() throws DbException {
+    private synchronized void ensureMigrations() throws JbException {
         ensureMigrationsTable();
         int oldVersion = oldVersion();
         if (oldVersion != dbVersion) {
             for (int version = oldVersion; version < dbVersion; version++) {
                 migrations.apply(version, origin);
             }
-            origin.write("UPDATE migrations SET version = " + dbVersion);
+            origin.write(
+                new JdSql(
+                    "UPDATE migrations SET version = ?",
+                    new IntArg(dbVersion)
+                )
+            );
         }
     }
 
-    private int oldVersion() throws DbException {
+    private int oldVersion() throws JbException {
         try (
-            final QueryResult result = origin.read("SELECT version FROM migrations")
+            final QueryResult result = origin.read(
+                new JdSql("SELECT version FROM migrations")
+            )
         ) {
             final ResultSet rs = result.rs();
             rs.next();
             return rs.getInt("version");
         } catch (SQLException e) {
-            throw new DbException("Can not get the old db version.", e);
+            throw new JbException("Can not get the old db version.", e);
         }
     }
 
-    private void ensureMigrationsTable() throws DbException {
+    private void ensureMigrationsTable() throws JbException {
         try (
             final QueryResult ignored = origin.read(
-                new SimpleSql("SELECT 1 FROM migrations")
+                new JdSql("SELECT 1 FROM migrations")
             )
         ) {
             // yeah, migrations table exists
-        } catch (DbException ignored) {
+        } catch (JbException ignored) {
             // Most likely reason for exception in this place - table
             // migrations does not exists, lets create and initialize it.
-            origin.write("CREATE TABLE migrations (version INTEGER NOT NULL DEFAULT 0)");
+            origin.write(
+                new JdSql(
+                    "CREATE TABLE migrations (version INTEGER NOT NULL DEFAULT 0)"
+                )
+            );
             try (
-                final QueryResult result = origin.read("SELECT 1 FROM migrations")
+                final QueryResult result = origin.read(
+                    new JdSql(
+                        "SELECT 1 FROM migrations"
+                    )
+                )
             ) {
                 final ResultSet rs = result.rs();
                 if (!rs.next()) {
-                    origin.write("INSERT INTO migrations (version) VALUES (0)");
+                    origin.write(
+                        new JdSql(
+                            "INSERT INTO migrations (version) VALUES (0)"
+                        )
+                    );
                 }
             } catch (SQLException e) {
-                throw new DbException("Can not initialize migrations table.", e);
+                throw new JbException("Can not initialize migrations table.", e);
             }
         }
     }

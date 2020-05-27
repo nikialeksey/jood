@@ -9,10 +9,11 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation 'org.cactoos:cactoos:0.41'
-    implementation 'org.xerial:sqlite-jdbc:3.27.2.1'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.xerial:sqlite-jdbc:3.27.2.1'
     testImplementation 'com.h2database:h2:1.4.200'
     testImplementation 'com.mchange:c3p0:0.9.5.5'
-    testImplementation 'junit:junit:4.12'
 }
 
 jacoco {
@@ -40,7 +41,7 @@ ext {
     siteUrl = 'https://github.com/nikialeksey/jood'
     gitUrl = 'https://github.com/nikialeksey/jood.git'
 
-    libraryVersion = '1.4.2'
+    libraryVersion = '2.0.0'
 
     developerId = 'nikialeksey'
     developerName = 'Alexey Nikitin'
@@ -96,11 +97,6 @@ if (project.rootProject.file('local.properties').exists()) {
                     dependencyNode.appendNode('groupId', 'org.cactoos')
                     dependencyNode.appendNode('artifactId', 'cactoos')
                     dependencyNode.appendNode('version', '0.41')
-
-                    dependencyNode = dependenciesNode.appendNode('dependency')
-                    dependencyNode.appendNode('groupId', 'org.xerial')
-                    dependencyNode.appendNode('artifactId', 'sqlite-jdbc')
-                    dependencyNode.appendNode('version', '3.27.2.1')
                 }
             }
         }

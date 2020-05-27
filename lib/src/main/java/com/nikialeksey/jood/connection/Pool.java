@@ -1,13 +1,13 @@
 package com.nikialeksey.jood.connection;
 
-import com.nikialeksey.jood.DbException;
+import com.nikialeksey.jood.JbException;
 
 import java.sql.Connection;
 
 public interface Pool {
-    Connection connection() throws DbException;
-    void release(Connection connection) throws DbException;
+    Connection connection() throws JbException;
+    void release(Connection connection) throws JbException;
     void fix(Connection connection);
-    void unfix(Connection connection) throws DbException;
-    int fixCount() throws DbException;
+    void unfix(Connection connection) throws JbException;
+    int fixCount() throws JbException;
 }

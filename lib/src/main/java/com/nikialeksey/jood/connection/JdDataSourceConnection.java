@@ -1,24 +1,20 @@
 package com.nikialeksey.jood.connection;
 
-import org.cactoos.list.ListOf;
-
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SimpleDataSourceConnection implements DataSourceConnection {
+public class JdDataSourceConnection implements DataSourceConnection {
 
     private final Connection connection;
     private final AtomicInteger fixCount;
 
-    public SimpleDataSourceConnection(
+    public JdDataSourceConnection(
         final Connection connection
     ) {
         this(connection, new AtomicInteger(0));
     }
 
-    public SimpleDataSourceConnection(
+    public JdDataSourceConnection(
         final Connection connection,
         final AtomicInteger fixCount
     ) {

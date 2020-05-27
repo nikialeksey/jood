@@ -2,6 +2,7 @@ package com.nikialeksey.jood;
 
 import com.nikialeksey.jood.args.IntArg;
 import com.nikialeksey.jood.args.StringArg;
+import com.nikialeksey.jood.sql.JdSql;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class MigrationsDbTest {
     public void simpleMigrations() throws Exception {
         final Db db = new MigrationsDb(
             new SqliteDb(),
-            new SimpleMigrations(
+            new JdMigrations(
                 new Migration() {
                     @Override
                     public int number() {
@@ -27,8 +28,12 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws DbException {
-                        db.write("CREATE TABLE names (name TEXT NOT NULL)");
+                    public void execute(final Db db) throws JbException {
+                        db.write(
+                            new JdSql(
+                                "CREATE TABLE names (name TEXT NOT NULL)"
+                            )
+                        );
                     }
                 },
                 new Migration() {
@@ -38,8 +43,13 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws DbException {
-                        db.write("ALTER TABLE names ADD lastname TEXT NOT NULL DEFAULT ''");
+                    public void execute(final Db db) throws JbException {
+                        db.write(
+                            new JdSql(
+                                "ALTER TABLE names " +
+                                    "ADD lastname TEXT NOT NULL DEFAULT ''"
+                            )
+                        );
                     }
                 }
             ),
@@ -47,12 +57,16 @@ public class MigrationsDbTest {
         );
 
         db.write(
-            "INSERT INTO names VALUES(?, ?)",
-            new StringArg("Alexey"),
-            new StringArg("Nikitin")
+            new JdSql(
+                "INSERT INTO names VALUES(?, ?)",
+                new StringArg("Alexey"),
+                new StringArg("Nikitin")
+            )
         );
         try (
-            final QueryResult queryResult = db.read("SELECT * FROM names")
+            final QueryResult queryResult = db.read(
+                new JdSql("SELECT * FROM names")
+            )
         ) {
             final ResultSet rs = queryResult.rs();
             Assert.assertThat(rs.next(), IsEqual.equalTo(true));
@@ -67,7 +81,7 @@ public class MigrationsDbTest {
 
         final Db db = new MigrationsDb(
             new SqliteDb(),
-            new SimpleMigrations(
+            new JdMigrations(
                 new Migration() {
                     @Override
                     public int number() {
@@ -75,8 +89,12 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws DbException {
-                        db.write("CREATE TABLE nums (num INTEGER NOT NULL)");
+                    public void execute(final Db db) throws JbException {
+                        db.write(
+                            new JdSql(
+                                "CREATE TABLE nums (num INTEGER NOT NULL)"
+                            )
+                        );
                     }
                 }
             ),
@@ -91,10 +109,12 @@ public class MigrationsDbTest {
                     try {
                         latch.await();
                         db.write(
-                            "INSERT INTO nums (num) VALUES (?)",
-                            new IntArg(1)
+                            new JdSql(
+                                "INSERT INTO nums (num) VALUES (?)",
+                                new IntArg(1)
+                            )
                         );
-                    } catch (DbException | InterruptedException e) {
+                    } catch (JbException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -105,7 +125,9 @@ public class MigrationsDbTest {
             future.get();
         }
         try (
-            final QueryResult qr = db.read("SELECT COUNT(*) FROM nums")
+            final QueryResult qr = db.read(
+                new JdSql("SELECT COUNT(*) FROM nums")
+            )
         ) {
             final ResultSet rs = qr.rs();
             Assert.assertThat(rs.next(), IsEqual.equalTo(true));

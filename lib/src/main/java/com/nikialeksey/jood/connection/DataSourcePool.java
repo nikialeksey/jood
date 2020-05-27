@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.connection;
 
-import com.nikialeksey.jood.DbException;
+import com.nikialeksey.jood.JbException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ public class DataSourcePool implements Pool {
     }
 
     @Override
-    public Connection connection() throws DbException {
+    public Connection connection() throws JbException {
         try {
             final Connection result;
             if (fixed.get() != null) {
@@ -31,7 +31,7 @@ public class DataSourcePool implements Pool {
             }
             return result;
         } catch (SQLException e) {
-            throw new DbException(
+            throw new JbException(
                 "Could not get the connection from data source.",
                 e
             );
@@ -39,12 +39,12 @@ public class DataSourcePool implements Pool {
     }
 
     @Override
-    public void release(final Connection connection) throws DbException {
+    public void release(final Connection connection) throws JbException {
         if (fixed.get() == null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new DbException(
+                throw new JbException(
                     "Could not release the connection.",
                     e
                 );
@@ -55,13 +55,13 @@ public class DataSourcePool implements Pool {
     @Override
     public void fix(final Connection connection) {
         if (fixed.get() == null) {
-            fixed.set(new SimpleDataSourceConnection(connection));
+            fixed.set(new JdDataSourceConnection(connection));
         }
         fixed.get().fix();
     }
 
     @Override
-    public void unfix(final Connection connection) throws DbException {
+    public void unfix(final Connection connection) throws JbException {
         if (fixed.get() != null) {
             fixed.get().unfix();
             if (fixed.get().fixCount() == 0) {
@@ -69,25 +69,25 @@ public class DataSourcePool implements Pool {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    throw new DbException(
+                    throw new JbException(
                         "Could not close the fixed connection.",
                         e
                     );
                 }
             }
         } else {
-            throw new DbException(
+            throw new JbException(
                 "You trying to unfix the connection when there is no fixed"
             );
         }
     }
 
     @Override
-    public int fixCount() throws DbException {
+    public int fixCount() throws JbException {
         if (fixed.get() != null) {
             return fixed.get().fixCount();
         } else {
-            throw new DbException(
+            throw new JbException(
                 "Try to get fix count when there is not fixed"
             );
         }

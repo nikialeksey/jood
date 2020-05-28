@@ -98,7 +98,7 @@ public class JdDbTest {
                 throw new RuntimeException();
             });
             Assert.fail("Transaction must be fail");
-        } catch (JbException e) {
+        } catch (JdException e) {
             Assert.assertThat(
                 connection.getAutoCommit(),
                 IsEqual.equalTo(savedAutoCommit)
@@ -197,7 +197,7 @@ public class JdDbTest {
                                 );
                             }
                         });
-                    } catch (JbException | InterruptedException e) {
+                    } catch (JdException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -214,7 +214,7 @@ public class JdDbTest {
                                 )
                             );
                         }
-                    } catch (JbException | InterruptedException e) {
+                    } catch (JdException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -283,7 +283,7 @@ public class JdDbTest {
                 throw new RuntimeException("Fail");
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 
@@ -312,7 +312,7 @@ public class JdDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws JbException {
+                    public void execute(final Db db) throws JdException {
                         db.write(new JdSql("CREATE TABLE t (n INTEGER NOT NULL)"));
                     }
                 }
@@ -330,7 +330,7 @@ public class JdDbTest {
                 throw new RuntimeException("Fail");
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 
@@ -362,7 +362,7 @@ public class JdDbTest {
                 db.write(new JdSql("INSERT INTO t(n) VALUES(2)"));
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 
@@ -416,7 +416,7 @@ public class JdDbTest {
                 throw new RuntimeException("Fail");
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 
@@ -446,7 +446,7 @@ public class JdDbTest {
                 db.write(new JdSql("INSERT INTO t(n) VALUES(2)"));
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 
@@ -473,7 +473,7 @@ public class JdDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws JbException {
+                    public void execute(final Db db) throws JdException {
                         db.write(new JdSql("CREATE TABLE t (n INTEGER NOT NULL)"));
                     }
                 }
@@ -491,7 +491,7 @@ public class JdDbTest {
                 throw new RuntimeException("Fail");
             });
             Assert.fail("Transaction must be failed!");
-        } catch (JbException e) {
+        } catch (JdException e) {
             // right way
         }
 

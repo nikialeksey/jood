@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.connection;
 
-import com.nikialeksey.jood.JbException;
+import com.nikialeksey.jood.JdException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ public class DataSourcePool implements Pool {
     }
 
     @Override
-    public Connection connection() throws JbException {
+    public Connection connection() throws JdException {
         try {
             final Connection result;
             if (fixed.get() != null) {
@@ -31,7 +31,7 @@ public class DataSourcePool implements Pool {
             }
             return result;
         } catch (SQLException e) {
-            throw new JbException(
+            throw new JdException(
                 "Could not get the connection from data source.",
                 e
             );
@@ -39,12 +39,12 @@ public class DataSourcePool implements Pool {
     }
 
     @Override
-    public void release(final Connection connection) throws JbException {
+    public void release(final Connection connection) throws JdException {
         if (fixed.get() == null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                throw new JbException(
+                throw new JdException(
                     "Could not release the connection.",
                     e
                 );
@@ -61,7 +61,7 @@ public class DataSourcePool implements Pool {
     }
 
     @Override
-    public void unfix(final Connection connection) throws JbException {
+    public void unfix(final Connection connection) throws JdException {
         if (fixed.get() != null) {
             fixed.get().unfix();
             if (fixed.get().fixCount() == 0) {
@@ -69,25 +69,25 @@ public class DataSourcePool implements Pool {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    throw new JbException(
+                    throw new JdException(
                         "Could not close the fixed connection.",
                         e
                     );
                 }
             }
         } else {
-            throw new JbException(
+            throw new JdException(
                 "You trying to unfix the connection when there is no fixed"
             );
         }
     }
 
     @Override
-    public int fixCount() throws JbException {
+    public int fixCount() throws JdException {
         if (fixed.get() != null) {
             return fixed.get().fixCount();
         } else {
-            throw new JbException(
+            throw new JdException(
                 "Try to get fix count when there is not fixed"
             );
         }

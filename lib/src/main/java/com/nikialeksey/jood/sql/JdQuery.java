@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.sql;
 
-import com.nikialeksey.jood.JbException;
+import com.nikialeksey.jood.JdException;
 import org.cactoos.Scalar;
 
 public class JdQuery implements Query {
@@ -16,11 +16,11 @@ public class JdQuery implements Query {
     }
 
     @Override
-    public String asString() throws JbException {
+    public String asString() throws JdException {
         try {
             return query.value();
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Could not get the query string.",
                 e
             );

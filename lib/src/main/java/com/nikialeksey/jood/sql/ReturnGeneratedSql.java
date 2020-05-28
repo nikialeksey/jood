@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.sql;
 
-import com.nikialeksey.jood.JbException;
+import com.nikialeksey.jood.JdException;
 import com.nikialeksey.jood.args.Arg;
 import org.cactoos.Scalar;
 import org.cactoos.list.ListOf;
@@ -32,7 +32,7 @@ public class ReturnGeneratedSql implements Sql {
     @Override
     public PreparedStatement prepare(
         final Connection connection
-    ) throws JbException {
+    ) throws JdException {
         try {
             final PreparedStatement statement = connection.prepareStatement(
                 query.value(),
@@ -43,7 +43,7 @@ public class ReturnGeneratedSql implements Sql {
             }
             return statement;
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Could not prepare the statement.",
                 e
             );

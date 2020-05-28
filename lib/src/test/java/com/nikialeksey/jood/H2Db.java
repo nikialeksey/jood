@@ -38,22 +38,22 @@ public class H2Db implements Db {
     }
 
     @Override
-    public QueryResult read(final Sql sql) throws JbException {
+    public QueryResult read(final Sql sql) throws JdException {
         return origin.read(sql);
     }
 
     @Override
-    public void write(final Sql sql) throws JbException {
+    public void write(final Sql sql) throws JdException {
         origin.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JdException {
         return origin.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws JbException {
+    public void run(final Transaction transaction) throws JdException {
         origin.run(transaction);
     }
 }

@@ -24,30 +24,30 @@ public class MigrationsDb implements Db {
     }
 
     @Override
-    public QueryResult read(final Sql sql) throws JbException {
+    public QueryResult read(final Sql sql) throws JdException {
         ensureMigrations();
         return origin.read(sql);
     }
 
     @Override
-    public void write(final Sql sql) throws JbException {
+    public void write(final Sql sql) throws JdException {
         ensureMigrations();
         origin.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JdException {
         ensureMigrations();
         return origin.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws JbException {
+    public void run(final Transaction transaction) throws JdException {
         ensureMigrations();
         origin.run(transaction);
     }
 
-    private synchronized void ensureMigrations() throws JbException {
+    private synchronized void ensureMigrations() throws JdException {
         ensureMigrationsTable();
         int oldVersion = oldVersion();
         if (oldVersion != dbVersion) {
@@ -63,7 +63,7 @@ public class MigrationsDb implements Db {
         }
     }
 
-    private int oldVersion() throws JbException {
+    private int oldVersion() throws JdException {
         try (
             final QueryResult result = origin.read(
                 new JdSql("SELECT version FROM migrations")
@@ -73,18 +73,18 @@ public class MigrationsDb implements Db {
             rs.next();
             return rs.getInt("version");
         } catch (SQLException e) {
-            throw new JbException("Can not get the old db version.", e);
+            throw new JdException("Can not get the old db version.", e);
         }
     }
 
-    private void ensureMigrationsTable() throws JbException {
+    private void ensureMigrationsTable() throws JdException {
         try (
             final QueryResult ignored = origin.read(
                 new JdSql("SELECT 1 FROM migrations")
             )
         ) {
             // yeah, migrations table exists
-        } catch (JbException ignored) {
+        } catch (JdException ignored) {
             // Most likely reason for exception in this place - table
             // migrations does not exists, lets create and initialize it.
             origin.write(
@@ -108,7 +108,7 @@ public class MigrationsDb implements Db {
                     );
                 }
             } catch (SQLException e) {
-                throw new JbException("Can not initialize migrations table.", e);
+                throw new JdException("Can not initialize migrations table.", e);
             }
         }
     }

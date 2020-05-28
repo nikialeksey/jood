@@ -20,7 +20,7 @@ public class JdMigrations implements Migrations {
     public void apply(
         final int number,
         final Db db
-    ) throws JbException {
+    ) throws JdException {
         for (final Migration migration : migrations) {
             if (migration.number() == number) {
                 migration.execute(db);

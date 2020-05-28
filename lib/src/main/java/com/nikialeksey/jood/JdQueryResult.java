@@ -37,13 +37,13 @@ public class JdQueryResult implements QueryResult {
     }
 
     @Override
-    public void close() throws JbException {
+    public void close() throws JdException {
         try {
             resultSet.close();
             statement.close();
             pool.release(connection);
         } catch (SQLException e) {
-            throw new JbException("Can not close the result set and statement.", e);
+            throw new JdException("Can not close the result set and statement.", e);
         }
     }
 }

@@ -8,5 +8,5 @@ public interface QueryResult extends AutoCloseable {
 
     Statement stmnt();
 
-    void close() throws JbException;
+    void close() throws JdException;
 }

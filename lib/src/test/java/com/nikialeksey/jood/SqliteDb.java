@@ -39,22 +39,22 @@ public class SqliteDb implements Db {
     }
 
     @Override
-    public QueryResult read(final Sql sql) throws JbException {
+    public QueryResult read(final Sql sql) throws JdException {
         return db.read(sql);
     }
 
     @Override
-    public void write(final Sql sql) throws JbException {
+    public void write(final Sql sql) throws JdException {
         db.write(sql);
     }
 
     @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JdException {
         return db.writeReturnGenerated(sql);
     }
 
     @Override
-    public void run(final Transaction transaction) throws JbException {
+    public void run(final Transaction transaction) throws JdException {
         db.run(transaction);
     }
 }

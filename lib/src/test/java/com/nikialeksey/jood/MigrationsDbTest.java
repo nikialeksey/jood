@@ -28,7 +28,7 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws JbException {
+                    public void execute(final Db db) throws JdException {
                         db.write(
                             new JdSql(
                                 "CREATE TABLE names (name TEXT NOT NULL)"
@@ -43,7 +43,7 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws JbException {
+                    public void execute(final Db db) throws JdException {
                         db.write(
                             new JdSql(
                                 "ALTER TABLE names " +
@@ -89,7 +89,7 @@ public class MigrationsDbTest {
                     }
 
                     @Override
-                    public void execute(final Db db) throws JbException {
+                    public void execute(final Db db) throws JdException {
                         db.write(
                             new JdSql(
                                 "CREATE TABLE nums (num INTEGER NOT NULL)"
@@ -114,7 +114,7 @@ public class MigrationsDbTest {
                                 new IntArg(1)
                             )
                         );
-                    } catch (JbException | InterruptedException e) {
+                    } catch (JdException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 })

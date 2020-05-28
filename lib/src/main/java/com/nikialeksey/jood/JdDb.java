@@ -27,7 +27,7 @@ public class JdDb implements Db {
     }
 
     @Override
-    public QueryResult read(final Sql sql) throws JbException {
+    public QueryResult read(final Sql sql) throws JdException {
         final Connection connection = pool.connection();
         try {
             final PreparedStatement statement = sql.prepare(connection);
@@ -38,7 +38,7 @@ public class JdDb implements Db {
                 statement.executeQuery()
             );
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Can not execute the read query.",
                 e
             );
@@ -46,14 +46,14 @@ public class JdDb implements Db {
     }
 
     @Override
-    public void write(final Sql sql) throws JbException {
+    public void write(final Sql sql) throws JdException {
         final Connection connection = pool.connection();
         try (
             final PreparedStatement statement = sql.prepare(connection)
         ) {
             statement.executeUpdate();
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Can not execute the write query.",
                 e
             );
@@ -63,7 +63,7 @@ public class JdDb implements Db {
     }
 
     @Override
-    public QueryResult writeReturnGenerated(final Sql sql) throws JbException {
+    public QueryResult writeReturnGenerated(final Sql sql) throws JdException {
         final Connection connection = pool.connection();
         try {
             final PreparedStatement statement = sql.prepare(connection);
@@ -75,7 +75,7 @@ public class JdDb implements Db {
                 statement.getGeneratedKeys()
             );
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Can not execute the write query.",
                 e
             );
@@ -83,7 +83,7 @@ public class JdDb implements Db {
     }
 
     @Override
-    public void run(final Transaction transaction) throws JbException {
+    public void run(final Transaction transaction) throws JdException {
         try {
             final Connection connection = pool.connection();
             final boolean savedAutoCommit = connection.getAutoCommit();
@@ -97,7 +97,7 @@ public class JdDb implements Db {
                 }
             } catch (Exception e) {
                 connection.rollback();
-                throw new JbException(
+                throw new JdException(
                     "Transaction could not be completed, rollback.",
                     e
                 );
@@ -106,7 +106,7 @@ public class JdDb implements Db {
                 pool.unfix(connection);
             }
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Can not execute the transaction.",
                 e
             );

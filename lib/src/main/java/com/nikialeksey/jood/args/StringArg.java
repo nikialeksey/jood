@@ -1,6 +1,6 @@
 package com.nikialeksey.jood.args;
 
-import com.nikialeksey.jood.JbException;
+import com.nikialeksey.jood.JdException;
 import org.cactoos.Scalar;
 
 import java.sql.PreparedStatement;
@@ -20,11 +20,11 @@ public class StringArg implements Arg {
     public void printTo(
         final PreparedStatement stmt,
         final int index
-    ) throws JbException {
+    ) throws JdException {
         try {
             stmt.setString(index, value.value());
         } catch (Exception e) {
-            throw new JbException(
+            throw new JdException(
                 "Could not get the string value for argument",
                 e
             );

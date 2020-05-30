@@ -10,6 +10,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/nikialeksey/jood/blob/master/LICENSE)
 
+![logo](https://raw.githubusercontent.com/nikialeksey/jood/master/assets/github-logo.png)
+
 ## What is it?
 **Jood** is object oriented sql-database library written in Java.
 

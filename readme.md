@@ -2,7 +2,11 @@
 
 ![Elegant Objects Respected Here](http://www.elegantobjects.org/badge.svg)
 
-![nullfree](https://iwillfailyou.com/nullfree/nikialeksey/jood)
+![nullfree status](https://iwillfailyou.com/nullfree/nikialeksey/jood)
+![staticfree status](https://iwillfailyou.com/staticfree/nikialeksey/jood)
+![allpublic status](https://iwillfailyou.com/allpublic/nikialeksey/jood)
+![setterfree status](https://iwillfailyou.com/setterfree/nikialeksey/jood)
+![nomultiplereturn status](https://iwillfailyou.com/nomultiplereturn/nikialeksey/jood)
 
 [![Lib version](https://img.shields.io/maven-central/v/com.nikialeksey/jood.svg?label=maven)](https://maven-badges.herokuapp.com/maven-central/com.nikialeksey/jood)
 [![Build Status](https://travis-ci.org/nikialeksey/jood.svg?branch=master)](https://travis-ci.org/nikialeksey/jood)

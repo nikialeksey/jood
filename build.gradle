@@ -1,9 +1,14 @@
 plugins {
-    id 'com.nikialeksey.nullfree' version '1.5.1'
+    id 'com.iwillfailyou' version '0.4.1'
 }
 
-nullfree {
-    skipComparisions = true
+iwillfailyou {
+    nullfree {
+        skipComparisons = true
+    }
+    allfinal {
+        disabled = true
+    }
 }
 
 allprojects {

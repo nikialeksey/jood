@@ -1,17 +1,24 @@
 package com.nikialeksey.jood;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.nikialeksey.jood.args.BlobArg;
 import com.nikialeksey.jood.args.IntArg;
 import com.nikialeksey.jood.args.StringArg;
 import com.nikialeksey.jood.sql.ReturnGeneratedSql;
 import com.nikialeksey.jood.sql.JdSql;
+import org.h2.util.IOUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -21,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class JdDbTest {
 
@@ -506,4 +514,39 @@ public class JdDbTest {
         }
     }
 
+    @Test
+    public void saveAndReadSimpleBlob() throws Exception {
+        final Connection connection = DriverManager.getConnection(
+                "jdbc:h2:mem:saveAndReadSimpleBlob"
+        );
+        final Db db = new JdDb(() -> connection);
+
+        final String blobContent = "blobContent";
+        db.write(new JdSql("CREATE TABLE t (b BLOB)"));
+        final InputStream blobStream = new ByteArrayInputStream(
+                blobContent.getBytes(StandardCharsets.UTF_8)
+        );
+        db.write(
+                new JdSql(
+                        "INSERT INTO t(b) VALUES(?)",
+                        new BlobArg(blobStream)
+                )
+        );
+
+        try (QueryResult qr = db.read(new JdSql("SELECT b FROM t"))) {
+            final ResultSet rs = qr.rs();
+            Assert.assertThat(rs.next(), IsEqual.equalTo(true));
+            Assert.assertThat(
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    rs.getBlob("b").getBinaryStream(),
+                                    StandardCharsets.UTF_8
+                            )
+                    )
+                            .lines()
+                            .collect(Collectors.joining("\n")),
+                    IsEqual.equalTo(blobContent)
+            );
+        }
+    }
 }

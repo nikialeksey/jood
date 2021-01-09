@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 
 public class MigrationsDbTest {
     @Test
+    @SuppressWarnings("nomultiplereturn")
     public void simpleMigrations() throws Exception {
         final Db db = new MigrationsDb(
             new SqliteDb(),

@@ -7,6 +7,7 @@ import com.nikialeksey.jood.sql.Sql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@SuppressWarnings("allpublic")
 public class MigrationsDb implements Db {
 
     private final Db origin;

@@ -8,7 +8,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    implementation 'org.cactoos:cactoos:0.41'
+    implementation 'org.cactoos:cactoos:0.49'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.xerial:sqlite-jdbc:3.27.2.1'
@@ -41,7 +41,7 @@ ext {
     siteUrl = 'https://github.com/nikialeksey/jood'
     gitUrl = 'https://github.com/nikialeksey/jood.git'
 
-    libraryVersion = '3.1.0'
+    libraryVersion = '3.1.1'
 
     developerId = 'nikialeksey'
     developerName = 'Alexey Nikitin'
@@ -96,7 +96,7 @@ if (project.rootProject.file('local.properties').exists()) {
                     def dependencyNode = dependenciesNode.appendNode('dependency')
                     dependencyNode.appendNode('groupId', 'org.cactoos')
                     dependencyNode.appendNode('artifactId', 'cactoos')
-                    dependencyNode.appendNode('version', '0.41')
+                    dependencyNode.appendNode('version', '0.49')
                 }
             }
         }

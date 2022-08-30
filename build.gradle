@@ -1,8 +1,9 @@
 plugins {
-    id 'com.iwillfailyou' version '0.4.1'
+    id 'dev.youshallnotpass' version '0.6.1'
+    id 'io.codearte.nexus-staging' version '0.30.0'
 }
 
-iwillfailyou {
+youshallnotpass {
     nullfree {
         skipComparisons = true
     }

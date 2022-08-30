@@ -1,18 +1,17 @@
 plugins {
     id 'java-library'
     id 'jacoco'
-    id 'com.jfrog.bintray' version '1.8.4'
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    implementation 'org.cactoos:cactoos:0.49'
+    implementation 'org.cactoos:cactoos:0.54.0'
 
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.xerial:sqlite-jdbc:3.27.2.1'
-    testImplementation 'com.h2database:h2:1.4.200'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.xerial:sqlite-jdbc:3.39.2.1'
+    testImplementation 'com.h2database:h2:2.1.214'
     testImplementation 'com.mchange:c3p0:0.9.5.5'
 }
 
@@ -28,33 +27,56 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-ext {
-    bintrayName = 'jood'
-    artifact = 'jood'
-    libraryName = 'jood'
-
-    libraryDescription = 'Java object oriented database library'
-
-    bintrayRepo = 'java'
-    publishedGroupId = 'com.nikialeksey'
-
-    siteUrl = 'https://github.com/nikialeksey/jood'
-    gitUrl = 'https://github.com/nikialeksey/jood.git'
-
-    libraryVersion = '3.1.1'
-
-    developerId = 'nikialeksey'
-    developerName = 'Alexey Nikitin'
-    developerEmail = 'nikialeksey@gmail.com'
-    licenseName = 'MIT License'
-    licenseUrl = 'https://github.com/nikialeksey/jood/blob/master/LICENSE'
-    allLicenses = ['MIT']
-}
 if (project.rootProject.file('local.properties').exists()) {
-    apply plugin: 'maven'
-    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+    ext {
+        artifact = 'jood'
+        libraryName = 'jood'
+        libraryDescription = 'Java object oriented database library'
+        publishedGroupId = 'com.nikialeksey'
+
+        siteUrl = 'https://github.com/nikialeksey/jood'
+        gitUrl = 'https://github.com/nikialeksey/jood.git'
+
+        libraryVersion = '3.1.2'
+
+        developerId = 'nikialeksey'
+        developerName = 'Alexey Nikitin'
+        developerEmail = 'nikialeksey@gmail.com'
+        licenseName = 'MIT License'
+        licenseUrl = 'https://github.com/nikialeksey/jood/blob/master/LICENSE'
+        allLicenses = ['MIT']
+    }
+
+    Properties properties = new Properties()
+    properties.load(
+            project.rootProject.file('local.properties').newDataInputStream()
+    )
+
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
     publishing {
+        repositories {
+            maven {
+                name = 'central'
+                url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username properties.getProperty("sonatype.user")
+                    password properties.getProperty("sonatype.pass")
+                }
+            }
+        }
+
         publications {
             jood_lib(MavenPublication) {
                 artifact(javadocJar)
@@ -96,11 +118,24 @@ if (project.rootProject.file('local.properties').exists()) {
                     def dependencyNode = dependenciesNode.appendNode('dependency')
                     dependencyNode.appendNode('groupId', 'org.cactoos')
                     dependencyNode.appendNode('artifactId', 'cactoos')
-                    dependencyNode.appendNode('version', '0.49')
+                    dependencyNode.appendNode('version', '0.54.0')
                 }
             }
         }
     }
-    bintray.publications = ['jood_lib']
-    bintray.configurations = []
+
+    def signingKeyId = properties.getProperty("signingKeyId")
+    def signingKey = new File(properties.getProperty("signingKey")).text
+    def signingPassword = properties.getProperty("signingPassword")
+    signing {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications.jood_lib)
+    }
+
+    nexusStaging {
+        serverUrl = "https://s01.oss.sonatype.org/service/local/"
+        username = properties.getProperty("sonatype.user")
+        password = properties.getProperty("sonatype.pass")
+        packageGroup = publishedGroupId
+    }
 }

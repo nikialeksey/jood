@@ -84,4 +84,12 @@ public class SqliteDbTest {
             Assert.assertThat(rs.getInt(1), IsEqual.equalTo(4));
         }
     }
+
+    @Test
+    public void alterRenameUsingWriteWithoutExceptions() throws Exception {
+        // case from https://github.com/xerial/sqlite-jdbc/issues/497
+        final Db db = new SqliteDb();
+        db.write(new JdSql("CREATE TABLE t (t TEXT)"));
+        db.write(new JdSql("ALTER TABLE t RENAME TO t2"));
+    }
 }
